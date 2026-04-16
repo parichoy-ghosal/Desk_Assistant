@@ -20,6 +20,7 @@ target_include_directories(pico_rtos PRIVATE
 target_sources(pico_rtos PRIVATE
     main.c 
     ssd1306.c
+    font5x7.c
     FreeRTOS-Kernel/tasks.c
     FreeRTOS-Kernel/queue.c
     FreeRTOS-Kernel/list.c
