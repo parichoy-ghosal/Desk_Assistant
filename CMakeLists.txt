@@ -18,6 +18,8 @@ target_include_directories(pico_rtos PRIVATE
 )
 
 target_sources(pico_rtos PRIVATE
+    main.c 
+    ssd1306.c
     FreeRTOS-Kernel/tasks.c
     FreeRTOS-Kernel/queue.c
     FreeRTOS-Kernel/list.c
@@ -27,8 +29,7 @@ target_sources(pico_rtos PRIVATE
     FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c
 )
 
-target_link_libraries(pico_rtos pico_stdlib hardware_irq hardware_exception hardware_structs
-)
+target_link_libraries(pico_rtos PRIVATE pico_stdlib hardware_irq hardware_exception hardware_structs hardware_i2c)
 
 pico_add_extra_outputs(pico_rtos)
 pico_enable_stdio_usb(pico_rtos 1)
