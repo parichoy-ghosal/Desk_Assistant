@@ -26,6 +26,9 @@ target_sources(pico_rtos PRIVATE
     main.c 
     drivers/ssd1306.c
     drivers/font5x7.c
+    input/buttons.c
+    tasks/task_mngr.c
+    ui/ui.c
     FreeRTOS-Kernel/tasks.c
     FreeRTOS-Kernel/queue.c
     FreeRTOS-Kernel/list.c
