@@ -55,6 +55,15 @@ typedef enum {
 
 ScreenState currentScreen = SCREEN_IDLE;
 
+const char *menuItems[] = {
+    "Tasks",
+    "Timer",
+    "Settings"
+};
+
+int menuIndex = 0;
+int menuSize = 3;
+
 void ui_task(void *params) {
 
     InputEvent event;
@@ -62,7 +71,6 @@ void ui_task(void *params) {
 
     while (1) {
 
-        // check input
         if (xQueueReceive(inputQueue, &event, 0)) {
 
             if (currentScreen == SCREEN_IDLE) {
@@ -70,8 +78,24 @@ void ui_task(void *params) {
                     currentScreen = SCREEN_MENU;
                 }
             }
+
             else if (currentScreen == SCREEN_MENU) {
+
+                if (event == EVENT_UP) {
+                    menuIndex--;
+                    if (menuIndex < 0) menuIndex = menuSize - 1;
+                }
+
+                if (event == EVENT_DOWN) {
+                    menuIndex++;
+                    if (menuIndex >= menuSize) menuIndex = 0;
+                }
+
                 if (event == EVENT_SELECT) {
+                    printf("Selected: %s\n", menuItems[menuIndex]);
+                }
+
+                if (event == EVENT_LEFT) {
                     currentScreen = SCREEN_IDLE;
                 }
             }
@@ -83,14 +107,21 @@ void ui_task(void *params) {
 
             ssd1306_text(0, 0, "TuiTui");
             ssd1306_text(0, 16, "RTOS Desk Assistant");
-            draw_fire(35, 55, 50, 20, phase);
+            draw_fire(30, 55, 50, 20, phase);
+        }
 
-        } else if (currentScreen == SCREEN_MENU) {
+        else if (currentScreen == SCREEN_MENU) {
 
             ssd1306_text(0, 0, "Menu");
-            ssd1306_text(0, 16, "> Tasks");
-            ssd1306_text(0, 24, "  Timer");
-            ssd1306_text(0, 32, "  Settings");
+
+            for (int i = 0; i < menuSize; i++) {
+
+                if (i == menuIndex) {
+                    ssd1306_text(0, 16 + i * 8, ">");
+                }
+
+                ssd1306_text(10, 16 + i * 8, menuItems[i]);
+            }
         }
 
         ssd1306_show();
@@ -107,30 +138,29 @@ void input_task(void *params) {
         if (!gpio_get(BTN_UP)) {
             InputEvent e = EVENT_UP;
             xQueueSend(inputQueue, &e, 0);
-            vTaskDelay(pdMS_TO_TICKS(200));
-        }
-        else if (!gpio_get(BTN_DOWN)) {
-            InputEvent e = EVENT_DOWN;
-            xQueueSend(inputQueue, &e, 0);
-            vTaskDelay(pdMS_TO_TICKS(200));
-        }
-        else if (!gpio_get(BTN_LEFT)) {
-            InputEvent e = EVENT_LEFT;
-            xQueueSend(inputQueue, &e, 0);
-            vTaskDelay(pdMS_TO_TICKS(200));
-        }
-        else if (!gpio_get(BTN_RIGHT)) {
-            InputEvent e = EVENT_RIGHT;
-            xQueueSend(inputQueue, &e, 0);
-            vTaskDelay(pdMS_TO_TICKS(200));
-        }
-        else if (!gpio_get(BTN_SELECT)) {
-            InputEvent e = EVENT_SELECT;
-            xQueueSend(inputQueue, &e, 0);
-            vTaskDelay(pdMS_TO_TICKS(200));
         }
 
-        vTaskDelay(pdMS_TO_TICKS(50));
+        if (!gpio_get(BTN_DOWN)) {
+            InputEvent e = EVENT_DOWN;
+            xQueueSend(inputQueue, &e, 0);
+        }
+
+        if (!gpio_get(BTN_LEFT)) {
+            InputEvent e = EVENT_LEFT;
+            xQueueSend(inputQueue, &e, 0);
+        }
+
+        if (!gpio_get(BTN_RIGHT)) {
+            InputEvent e = EVENT_RIGHT;
+            xQueueSend(inputQueue, &e, 0);
+        }
+
+        if (!gpio_get(BTN_SELECT)) {
+            InputEvent e = EVENT_SELECT;
+            xQueueSend(inputQueue, &e, 0);
+        }
+
+        vTaskDelay(pdMS_TO_TICKS(150)); // debounce
     }
 }
 

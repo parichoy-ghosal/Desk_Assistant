@@ -12,6 +12,11 @@ add_executable(pico_rtos
 
 target_include_directories(pico_rtos PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}
+    ${CMAKE_CURRENT_LIST_DIR}/drivers
+    ${CMAKE_CURRENT_LIST_DIR}/input
+    ${CMAKE_CURRENT_LIST_DIR}/system
+    ${CMAKE_CURRENT_LIST_DIR}/tasks
+    ${CMAKE_CURRENT_LIST_DIR}/ui
     ${CMAKE_CURRENT_LIST_DIR}/FreeRTOS-Kernel/include
     ${CMAKE_CURRENT_LIST_DIR}/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040
     ${CMAKE_CURRENT_LIST_DIR}/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include
@@ -19,8 +24,8 @@ target_include_directories(pico_rtos PRIVATE
 
 target_sources(pico_rtos PRIVATE
     main.c 
-    ssd1306.c
-    font5x7.c
+    drivers/ssd1306.c
+    drivers/font5x7.c
     FreeRTOS-Kernel/tasks.c
     FreeRTOS-Kernel/queue.c
     FreeRTOS-Kernel/list.c
