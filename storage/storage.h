@@ -4,8 +4,9 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-extern volatile int isSaving;
+void save_tasks();
+void load_tasks();
 
-void storage_task(void *params);
+extern volatile int isSaving;
 
 #endif

@@ -13,10 +13,11 @@ extern QueueHandle_t inputQueue;
 #define BTN_RIGHT  17
 #define BTN_SELECT 18
 
-#define LongPress 800
+#define LONG_PRESS_TIME 800
+
 static uint32_t press_time = 0;
 static int pressed = 0;
-static int long_sent = 0;
+static int save_sent = 0;
 
 void buttons_init() {
     int pins[] = {BTN_UP, BTN_DOWN, BTN_LEFT, BTN_RIGHT, BTN_SELECT};
@@ -55,29 +56,37 @@ void input_task(void *params) {
         if (!gpio_get(BTN_SELECT)) {
 
             if (!pressed) {
-                press_time = to_ms_since_boot(get_absolute_time());
+                press_time =
+                    to_ms_since_boot(get_absolute_time());
                 pressed = 1;
-                long_sent = 0;
+                save_sent = 0;
             }
 
-            uint32_t now = to_ms_since_boot(get_absolute_time());
+            uint32_t now =
+                to_ms_since_boot(get_absolute_time());
 
-            if (!long_sent && (now - press_time > LongPress)) {
+            if (!save_sent &&
+                (now - press_time > LONG_PRESS_TIME)) {
+
                 InputEvent e = EVENT_SAVE;
+
                 xQueueSend(inputQueue, &e, 0);
 
-                long_sent = 1;
+                save_sent = 1;
             }
 
-        } 
-        else {
+            } else {
 
-            if (pressed && !long_sent) {
+            if (pressed && !save_sent) {
+
                 InputEvent e = EVENT_SELECT;
+
                 xQueueSend(inputQueue, &e, 0);
             }
 
             pressed = 0;
+
+            save_sent = 0;
         }
 
         vTaskDelay(pdMS_TO_TICKS(50)); // debounce

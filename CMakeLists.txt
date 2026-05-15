@@ -12,7 +12,6 @@ pico_sdk_init()
 # =========================================
 # FatFs SPI Library
 # =========================================
-add_subdirectory(no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI)
 
 # =========================================
 # Main Executable
@@ -75,8 +74,6 @@ target_sources(pico_rtos PRIVATE
 
     # storage
     storage/storage.c
-    storage/fs_tasks.c
-    storage/hw_config.c
 
     # FreeRTOS
     FreeRTOS-Kernel/tasks.c
@@ -105,10 +102,7 @@ target_link_libraries(pico_rtos PRIVATE
     hardware_exception
     hardware_structs
     hardware_i2c
-    hardware_spi
 
-    # FatFs SPI
-    FatFs_SPI
 )
 
 # =========================================

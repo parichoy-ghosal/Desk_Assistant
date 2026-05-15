@@ -86,18 +86,14 @@ void ui_task(void *params) {
                     toggle_task(taskIndex);
                 }
                 if (event == EVENT_SAVE) {
-                    isSaving = 1;
-
-            
                     ssd1306_clear();
-                    ssd1306_text(20, 20, "Saving...");
+                    ssd1306_text(0, 0, "Saving...");
                     ssd1306_show();
-
-                    vTaskDelay(pdMS_TO_TICKS(1000));
-
-                    save_tasks_to_sd();
-
-                    isSaving = 0;
+                    save_tasks();
+                    ssd1306_clear();
+                    ssd1306_text(0, 0, "Saved!");
+                    ssd1306_show();
+                    vTaskDelay(pdMS_TO_TICKS(700));
                 }
             }
 
