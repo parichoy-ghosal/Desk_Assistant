@@ -1,13 +1,16 @@
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
 #include "FreeRTOS.h"
-#include "task.h"
+#include "task_mngr.h"
 #include "queue.h"
 #include "hardware/i2c.h"
 #include "buttons.h"
 #include "ui.h"
 #include "events.h"
 #include "ssd1306.h"
+#include "storage.h"
+#include "sd_card.h"
+#include "fs_tasks.h"
 
 #define I2C_PORT i2c0
 #define SDA_PIN 4
@@ -36,9 +39,13 @@ int main() {
     inputQueue = xQueueCreate(10, sizeof(InputEvent));
 
     buttons_init();
+
+    task_manager_init();
+    load_tasks_from_sd();
     
-    xTaskCreate(input_task, "Input", 256, NULL, 2, NULL);
-    xTaskCreate(ui_task, "UI", 512, NULL, 1, NULL);
+    xTaskCreate(input_task, "Input", 256, NULL, 1, NULL);
+    xTaskCreate(ui_task, "UI", 512, NULL, 2, NULL);
+    xTaskCreate(storage_task, "Storage", 512, NULL, 0, NULL);
 
     vTaskStartScheduler();
 

@@ -3,6 +3,7 @@
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "events.h"
+#include "pico/time.h"
 
 extern QueueHandle_t inputQueue;
 
@@ -11,6 +12,11 @@ extern QueueHandle_t inputQueue;
 #define BTN_LEFT   16
 #define BTN_RIGHT  17
 #define BTN_SELECT 18
+
+#define LongPress 800
+static uint32_t press_time = 0;
+static int pressed = 0;
+static int long_sent = 0;
 
 void buttons_init() {
     int pins[] = {BTN_UP, BTN_DOWN, BTN_LEFT, BTN_RIGHT, BTN_SELECT};
@@ -47,10 +53,33 @@ void input_task(void *params) {
         }
 
         if (!gpio_get(BTN_SELECT)) {
-            InputEvent e = EVENT_SELECT;
-            xQueueSend(inputQueue, &e, 0);
+
+            if (!pressed) {
+                press_time = to_ms_since_boot(get_absolute_time());
+                pressed = 1;
+                long_sent = 0;
+            }
+
+            uint32_t now = to_ms_since_boot(get_absolute_time());
+
+            if (!long_sent && (now - press_time > LongPress)) {
+                InputEvent e = EVENT_SAVE;
+                xQueueSend(inputQueue, &e, 0);
+
+                long_sent = 1;
+            }
+
+        } 
+        else {
+
+            if (pressed && !long_sent) {
+                InputEvent e = EVENT_SELECT;
+                xQueueSend(inputQueue, &e, 0);
+            }
+
+            pressed = 0;
         }
 
-        vTaskDelay(pdMS_TO_TICKS(150)); // debounce
+        vTaskDelay(pdMS_TO_TICKS(50)); // debounce
     }
 }

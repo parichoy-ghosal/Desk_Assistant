@@ -38,4 +38,9 @@
 #define INCLUDE_vTaskDelay              1
 #define INCLUDE_xTaskGetSchedulerState  1
 
+#define FLASH_TOTAL_SIZE      (2 * 1024 * 1024)
+
+// reserve last sector for tasks
+#define FLASH_TARGET_OFFSET   (FLASH_TOTAL_SIZE - FLASH_SECTOR_SIZE)
+
 #endif

@@ -8,6 +8,8 @@
 
 extern QueueHandle_t inputQueue;
 
+extern volatile int isSaving;
+
 typedef enum {
     SCREEN_IDLE,
     SCREEN_MENU,
@@ -82,6 +84,20 @@ void ui_task(void *params) {
 
                 if (event == EVENT_SELECT) {
                     toggle_task(taskIndex);
+                }
+                if (event == EVENT_SAVE) {
+                    isSaving = 1;
+
+            
+                    ssd1306_clear();
+                    ssd1306_text(20, 20, "Saving...");
+                    ssd1306_show();
+
+                    vTaskDelay(pdMS_TO_TICKS(1000));
+
+                    save_tasks_to_sd();
+
+                    isSaving = 0;
                 }
             }
 

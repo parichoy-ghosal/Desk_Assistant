@@ -7,7 +7,8 @@ typedef enum {
     EVENT_DOWN,
     EVENT_LEFT,
     EVENT_RIGHT,
-    EVENT_SELECT
+    EVENT_SELECT,
+    EVENT_SAVE
 } InputEvent;
 
 #endif

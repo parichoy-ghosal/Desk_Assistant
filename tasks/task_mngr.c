@@ -1,4 +1,5 @@
 #include "task_mngr.h"
+
 #include <string.h>
 
 static Task tasks[MAX_TASKS] = {
@@ -9,7 +10,8 @@ static Task tasks[MAX_TASKS] = {
 
 static int taskCount = 3;
 
-void task_manager_init() {}
+void task_manager_init() {
+}
 
 Task* get_tasks() {
     return tasks;
@@ -19,16 +21,33 @@ int get_task_count() {
     return taskCount;
 }
 
+void set_task_count(int count) {
+
+    if (count >= 0 && count <= MAX_TASKS) {
+        taskCount = count;
+    }
+}
+
 void toggle_task(int index) {
-    if (index < 0 || index >= taskCount) return;
-    tasks[index].completed = !tasks[index].completed;
+
+    if (index < 0 || index >= taskCount)
+        return;
+
+    tasks[index].completed =
+        !tasks[index].completed;
 }
 
 void add_task(const char *title) {
-    if (taskCount >= MAX_TASKS) return;
 
-    strncpy(tasks[taskCount].title, title, 31);
+    if (taskCount >= MAX_TASKS)
+        return;
+
+    strncpy(tasks[taskCount].title,
+            title,
+            31);
+
     tasks[taskCount].title[31] = '\0';
+
     tasks[taskCount].completed = 0;
 
     taskCount++;
